@@ -1,0 +1,18 @@
+import Driver from '../models/Driver.js';
+
+export const createDriver = async (req, res) => {
+  try {
+    const driver = new Driver(req.body);
+    await driver.save();
+    res.status(201).json(driver);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const getDrivers = async (req, res) => {
+  const drivers = await Driver.find();
+  res.json(drivers);
+};
+
+
