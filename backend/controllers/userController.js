@@ -1,8 +1,9 @@
-import Rider from '../models/Rider.js';
+import User from '../models/UserModel.js';
 
 export const createRider = async (req, res) => {
   try {
-    const rider = new Rider(req.body);
+    const rider = new User()
+    (req.body);
     await rider.save();
     res.status(201).json(rider);
   } catch (err) {
@@ -11,6 +12,6 @@ export const createRider = async (req, res) => {
 };
 
 export const getRiders = async (req, res) => {
-  const riders = await Rider.find();
+  const riders = await User.find();
   res.json(riders);
 };

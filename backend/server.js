@@ -2,8 +2,8 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import connectDB from './config/db.js';
-import driverRoutes from './routes/driverRoutes.js';
-import riderRoutes from './routes/riderRoutes.js';
+import driverRoutes from './routes/tripRoutes.js';
+import riderRoutes from './routes/UserRoutes.js';
 
 dotenv.config();
 const app = express();

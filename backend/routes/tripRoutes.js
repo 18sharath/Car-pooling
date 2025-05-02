@@ -1,5 +1,5 @@
 import express from 'express';
-import { createDriver, getDrivers } from '../controllers/driverController.js';
+import { createDriver, getDrivers } from '../controllers/tripController.js';
 const router = express.Router();
 
 router.post('/', createDriver);
