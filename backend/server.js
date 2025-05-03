@@ -2,8 +2,8 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import connectDB from './config/db.js';
-import driverRoutes from './routes/tripRoutes.js';
-import riderRoutes from './routes/UserRoutes.js';
+import tripRoutes from './routes/tripRoutes.js'
+import UserRoutes from './routes/UserRoutes.js'
 
 dotenv.config();
 const app = express();
@@ -12,8 +12,8 @@ app.use(express.json());
 
 connectDB();
 
-app.use('/api/driver', driverRoutes);
-app.use('/api/rider', riderRoutes);
+// app.use('/api', tripRoutes);
+app.use('/api', UserRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
