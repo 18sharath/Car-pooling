@@ -1,9 +1,9 @@
-import Trip from '../models/TripModel.js';
+import tripmodel from '../models/TripModel.js';
 
 export  const createDriver = async (req, res) => {
   try {
     
-    const driver = new Trip(req.body);
+    const driver = new tripmodel(req.body);
     await driver.save();
     res.status(201).json(driver);
   } catch (err) {
@@ -12,7 +12,7 @@ export  const createDriver = async (req, res) => {
 };
 
 export const getDrivers = async (req, res) => {
-  const drivers = await Trip.find();
+  const drivers = await tripmodel.find();
   res.json(drivers);
 };
 
