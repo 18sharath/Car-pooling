@@ -150,7 +150,7 @@ const login=async (req,res)=>{
     }
   };
 
-  
+
   const getProfile = async (req, res) => {
     try {
       const userId = req.user.id; // From auth middleware
@@ -210,5 +210,5 @@ const login=async (req,res)=>{
   };
 
 
-export default {registerUser,login,completeProfile,toggleButton,getProfile,updateProfile};
+export  {registerUser,login,completeProfile,toggleButton,getProfile,updateProfile};
 
