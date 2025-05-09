@@ -18,3 +18,6 @@ router.delete('/:id', deleteTrip);
 router.post('/join/:id', joinTrip);  // Add passenger to trip
 
 export default router;
+
+
+
