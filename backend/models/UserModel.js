@@ -9,7 +9,7 @@ const UserSchema = new mongoose.Schema({
   joinedAt: { type: Date, default: Date.now },
   Adaarnumber:{
     type:Number,
-    required:true
+    
   }
 });
 

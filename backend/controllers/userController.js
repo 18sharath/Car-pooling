@@ -10,7 +10,7 @@ const createToken=(id)=>{
 
 
 const registerUser =async(req,res)=>{
-  const {name,email,password} =req.body;
+  const {email,password} =req.body;
   try{
     const exists=await usermodel.findOne({email});
     if(exists)
@@ -36,7 +36,7 @@ const registerUser =async(req,res)=>{
 
     // create a new user 
     const newUser=new usermodel({
-      name:name,
+      
       password:hashedpassword,
       email:email,
 
@@ -108,9 +108,10 @@ const login=async (req,res)=>{
     
   }
 
+  
   const completeProfile = async (req, res) => {
     try {
-      const { name, phone, role, Adaarnumber } = req.body;
+      const {name, phone, role, Adaarnumber } = req.body;
       const userId = req.user.id; // From auth middleware
       
       // Validate Aadhar number
