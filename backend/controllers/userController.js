@@ -63,7 +63,7 @@ const login=async (req,res)=>{
         return res.json({success:false,message:"user doesn't exist"});
 
       }
-    
+        
         const isMatch=await bcrypt.compare(password,user.password)
         if (!isMatch) {
             return res.json({success:false,message:"Invalid credentials"})
@@ -71,7 +71,7 @@ const login=async (req,res)=>{
         const token=createToken(user._id)
 
         const isProfileComplete = Boolean(user.name && user.phone && user.role && user.Adaarnumber);
-    
+
         res.json({success:true,token,isProfileComplete})
     }
     

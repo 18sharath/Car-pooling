@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 import usermodel from '../models/UserModel.js';
 
-const JWT_SECRET = process.env.jwt_secret || 'your-secret-key'; // Should be in .env file
+const JWT_SECRET = process.env.jwt_secret;
 
 
 const auth = async (req, res, next) => {
