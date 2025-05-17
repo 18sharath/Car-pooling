@@ -10,8 +10,8 @@ import {
 
 const router = express.Router();
 
-router.post('/', createTrip);
-router.get('/', getAllTrips);
+router.post('/create', createTrip);
+router.get('/gettripall', getAllTrips);
 router.get('/:id', getTripById);
 router.put('/:id', updateTrip);
 router.delete('/:id', deleteTrip);
