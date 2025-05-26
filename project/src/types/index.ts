@@ -61,6 +61,11 @@ export interface Ride {
   }[];
   status: 'scheduled' | 'in-progress' | 'completed' | 'cancelled';
   createdAt: string;
+  currentLocation?: {
+    lat: number;
+    lng: number;
+  };
+  estimatedTimeToPickup?: number;
 }
 
 export interface RideFilter {
@@ -79,6 +84,20 @@ export interface Booking {
   ride: Ride;
   passenger: User;
   status: 'pending' | 'confirmed' | 'cancelled';
+  pickupPoint?: {
+    address: string;
+    coordinates: {
+      lat: number;
+      lng: number;
+    };
+  };
+  dropoffPoint?: {
+    address: string;
+    coordinates: {
+      lat: number;
+      lng: number;
+    };
+  };
   createdAt: string;
 }
 

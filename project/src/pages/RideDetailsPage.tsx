@@ -1,24 +1,58 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useRideDetails } from '../hooks/useRides';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+
 import { 
   MapPin, Calendar, Clock, Users, Car, DollarSign, 
   MessageCircle, Star, Phone, Mail, ArrowLeft, AlertTriangle 
 } from 'lucide-react';
 import RideCard from '../components/rides/RideCard';
+import BookingRequestCard from '../components/rides/BookingRequestCard';
+import { useRideActions } from '../hooks/useRideActions.ts';
+import { Booking } from '../types';
+
+
 
 const RideDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { ride, loading, error } = useRideDetails(id);
   const { user, token } = useAuth();
   const navigate = useNavigate();
-  
+  const [bookings, setBookings] = useState<Booking[]>([]);
+
+  // Add this state near other state declarations
+const [updatingStatus, setUpdatingStatus] = useState<Record<string, boolean>>({});
+const { updateBookingStatus } = useRideActions();
+
+
   const [bookingStatus, setBookingStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [bookingError, setBookingError] = useState<string | null>(null);
   
+
+  const handleAcceptBooking = async (bookingId: string) => {
+  setUpdatingStatus(prev => ({ ...prev, [bookingId]: true }));
+  const success = await updateBookingStatus(bookingId, 'confirmed');
+  if (success) {
+    // Refresh data or update local state
+    window.location.reload(); // Temporary solution - better to update state
+  }
+  setUpdatingStatus(prev => ({ ...prev, [bookingId]: false }));
+};
+
+const handleCancelBooking = async (bookingId: string) => {
+  setUpdatingStatus(prev => ({ ...prev, [bookingId]: true }));
+  const success = await updateBookingStatus(bookingId, 'cancelled');
+  if (success) {
+    // Refresh data or update local state
+    window.location.reload(); // Temporary solution - better to update state
+  }
+  setUpdatingStatus(prev => ({ ...prev, [bookingId]: false }));
+};
+
+
   const handleBookRide = async () => {
     if (!user) {
       navigate('/login');
@@ -309,7 +343,44 @@ const RideDetailsPage: React.FC = () => {
                 )}
               </div>
             </div>
-            
+            {/* i am adding here deepseek.com suggestion  */}
+            {isUserDriver && ride.status === 'scheduled' && (
+  <div className="bg-white rounded-lg shadow-md overflow-hidden mt-6">
+    <div className="p-6">
+      <h2 className="text-lg font-bold text-gray-900 mb-4">Booking Requests</h2>
+      
+      {ride.passengers.filter(p => p.status === 'pending').length === 0 ? (
+        <p className="text-gray-500">No pending booking requests</p>
+      ) : (
+        <div className="space-y-4">
+          {ride.passengers
+            .filter(p => p.status === 'pending')
+            .map(passenger => {
+              const booking: Booking = {
+                _id: `${ride._id}-${passenger.user._id}`, // or a proper booking ID if available
+                ride: ride,
+                passenger: passenger.user,
+                status: passenger.status,
+                pickupPoint: passenger.pickupPoint,
+                dropoffPoint: passenger.dropoffPoint,
+                createdAt: new Date().toISOString() // or actual creation date
+              };
+              
+              return (
+                <BookingRequestCard
+                  key={passenger.user._id}
+                  booking={booking}
+                  onAccept={handleAcceptBooking}
+                  onCancel={handleCancelBooking}
+                  loading={updatingStatus[passenger.user._id]|| false}
+                />
+              );
+            })}
+        </div>
+      )}
+    </div>
+  </div>
+)}
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
               <div className="p-6">
                 <h2 className="text-lg font-bold text-gray-900 mb-4">

@@ -80,7 +80,6 @@ router.post('/', auth, async (req, res) => {
 router.put('/:id/status', auth, async (req, res) => {
   const { status } = req.body;
   
-  // Validate status
   if (!['confirmed', 'cancelled'].includes(status)) {
     return res.status(400).json({ message: 'Invalid status' });
   }
@@ -113,7 +112,7 @@ router.put('/:id/status', auth, async (req, res) => {
     if (passengerIndex !== -1) {
       ride.passengers[passengerIndex].status = status;
       
-      // Update available seats if confirmed
+      // Update available seats
       if (status === 'confirmed') {
         ride.availableSeats = Math.max(0, ride.availableSeats - 1);
       } else if (status === 'cancelled' && ride.passengers[passengerIndex].status === 'confirmed') {
@@ -123,13 +122,12 @@ router.put('/:id/status', auth, async (req, res) => {
       await ride.save();
     }
     
-    res.json({ message: `Booking ${status}` });
+    res.json({ booking, ride });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
   }
 });
-
 // @route   PUT /api/bookings/:id/cancel
 // @desc    Cancel booking (by passenger)
 // @access  Private (booking's passenger only)
