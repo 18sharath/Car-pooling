@@ -1,13 +1,13 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useRideDetails } from '../hooks/useRides';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-import { 
-  MapPin, Calendar, Clock, Users, Car, DollarSign, 
-  MessageCircle, Star, Phone, Mail, ArrowLeft, AlertTriangle 
+import {
+  MapPin, Calendar, Clock, Users, Car, DollarSign,
+  MessageCircle, Star, Phone, Mail, ArrowLeft, AlertTriangle
 } from 'lucide-react';
 import RideCard from '../components/rides/RideCard';
 import BookingRequestCard from '../components/rides/BookingRequestCard';
@@ -24,33 +24,35 @@ const RideDetailsPage: React.FC = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
 
   // Add this state near other state declarations
-const [updatingStatus, setUpdatingStatus] = useState<Record<string, boolean>>({});
-const { updateBookingStatus } = useRideActions();
+  const [updatingStatus, setUpdatingStatus] = useState<Record<string, boolean>>({});
+  const { updateBookingStatus } = useRideActions();
 
 
   const [bookingStatus, setBookingStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [bookingError, setBookingError] = useState<string | null>(null);
-  
+
 
   const handleAcceptBooking = async (bookingId: string) => {
-  setUpdatingStatus(prev => ({ ...prev, [bookingId]: true }));
-  const success = await updateBookingStatus(bookingId, 'confirmed');
-  if (success) {
-    // Refresh data or update local state
-    window.location.reload(); // Temporary solution - better to update state
-  }
-  setUpdatingStatus(prev => ({ ...prev, [bookingId]: false }));
-};
+    console.log("Booking ID:", bookingId);
+    console.log("onaccept")
+    setUpdatingStatus(prev => ({ ...prev, [bookingId]: true }));
+    const success = await updateBookingStatus(bookingId, 'confirmed');
+    if (success) {
+      // Refresh data or update local state
+      window.location.reload(); // Temporary solution - better to update state
+    }
+    setUpdatingStatus(prev => ({ ...prev, [bookingId]: false }));
+  };
 
-const handleCancelBooking = async (bookingId: string) => {
-  setUpdatingStatus(prev => ({ ...prev, [bookingId]: true }));
-  const success = await updateBookingStatus(bookingId, 'cancelled');
-  if (success) {
-    // Refresh data or update local state
-    window.location.reload(); // Temporary solution - better to update state
-  }
-  setUpdatingStatus(prev => ({ ...prev, [bookingId]: false }));
-};
+  const handleCancelBooking = async (bookingId: string) => {
+    setUpdatingStatus(prev => ({ ...prev, [bookingId]: true }));
+    const success = await updateBookingStatus(bookingId, 'cancelled');
+    if (success) {
+      // Refresh data or update local state
+      window.location.reload(); // Temporary solution - better to update state
+    }
+    setUpdatingStatus(prev => ({ ...prev, [bookingId]: false }));
+  };
 
 
   const handleBookRide = async () => {
@@ -58,13 +60,13 @@ const handleCancelBooking = async (bookingId: string) => {
       navigate('/login');
       return;
     }
-    
+
     if (!ride) return;
-    
+
     try {
       setBookingStatus('loading');
       setBookingError(null);
-      
+
       await axios.post(
         `${import.meta.env.VITE_API_URL}/bookings`,
         {
@@ -84,10 +86,10 @@ const handleCancelBooking = async (bookingId: string) => {
           }
         }
       );
-      
+
       setBookingStatus('success');
       toast.success('Ride booked successfully!');
-      
+
       // Refresh the ride details to update the passenger list
       setTimeout(() => {
         window.location.reload();
@@ -98,29 +100,29 @@ const handleCancelBooking = async (bookingId: string) => {
       toast.error(err.response?.data?.message || 'Failed to book ride');
     }
   };
-  
+
   const isUserDriver = user && ride && user._id === ride.driver._id;
   const isUserPassenger = user && ride && ride.passengers.some(p => p.user._id === user._id);
   const canBookRide = user && ride && !isUserDriver && !isUserPassenger && ride.availableSeats > 0 && ride.status === 'scheduled';
-  
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'long', 
-      month: 'long', 
-      day: 'numeric', 
-      year: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric'
     });
   };
-  
+
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleTimeString('en-US', { 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit'
     });
   };
-  
+
   if (loading) {
     return (
       <div className="flex justify-center items-center py-16">
@@ -128,7 +130,7 @@ const handleCancelBooking = async (bookingId: string) => {
       </div>
     );
   }
-  
+
   if (error || !ride) {
     return (
       <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
@@ -143,8 +145,8 @@ const handleCancelBooking = async (bookingId: string) => {
           </div>
         </div>
         <div className="mt-4">
-          <button 
-            onClick={() => navigate(-1)} 
+          <button
+            onClick={() => navigate(-1)}
             className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -154,14 +156,14 @@ const handleCancelBooking = async (bookingId: string) => {
       </div>
     );
   }
-  
+
   return (
     <div className="animate-fade-in">
       <div className="bg-gradient-to-r from-primary-600 to-primary-800 py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center space-x-4">
-            <button 
-              onClick={() => navigate(-1)} 
+            <button
+              onClick={() => navigate(-1)}
               className="inline-flex items-center px-3 py-1 border border-transparent rounded-md text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-primary-700 focus:ring-white"
             >
               <ArrowLeft className="mr-1 h-4 w-4" />
@@ -173,14 +175,14 @@ const handleCancelBooking = async (bookingId: string) => {
           </div>
         </div>
       </div>
-      
+
       <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
               <div className="p-6">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Ride Details</h2>
-                
+
                 <div className="space-y-6">
                   <div className="flex items-start">
                     <div className="flex flex-col items-center mr-4">
@@ -192,7 +194,7 @@ const handleCancelBooking = async (bookingId: string) => {
                         <div className="rounded-full h-3 w-3 bg-accent-500"></div>
                       </div>
                     </div>
-                    
+
                     <div className="flex-1">
                       <div className="mb-6">
                         <div className="flex items-center text-gray-500 mb-1">
@@ -202,7 +204,7 @@ const handleCancelBooking = async (bookingId: string) => {
                         <p className="font-medium text-lg">{ride.departureLocation.city}</p>
                         <p className="text-gray-700">{ride.departureLocation.address}</p>
                       </div>
-                      
+
                       <div>
                         <div className="flex items-center text-gray-500 mb-1">
                           <MapPin className="h-5 w-5 mr-1" />
@@ -213,7 +215,7 @@ const handleCancelBooking = async (bookingId: string) => {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-gray-200 pt-6">
                     <div>
                       <div className="flex items-center text-gray-500 mb-1">
@@ -222,7 +224,7 @@ const handleCancelBooking = async (bookingId: string) => {
                       </div>
                       <p className="font-medium">{formatDate(ride.departureTime)}</p>
                     </div>
-                    
+
                     <div>
                       <div className="flex items-center text-gray-500 mb-1">
                         <Clock className="h-5 w-5 mr-1" />
@@ -232,7 +234,7 @@ const handleCancelBooking = async (bookingId: string) => {
                         {formatTime(ride.departureTime)} - {formatTime(ride.estimatedArrivalTime)}
                       </p>
                     </div>
-                    
+
                     <div>
                       <div className="flex items-center text-gray-500 mb-1">
                         <Users className="h-5 w-5 mr-1" />
@@ -240,7 +242,7 @@ const handleCancelBooking = async (bookingId: string) => {
                       </div>
                       <p className="font-medium">{ride.availableSeats} of {ride.availableSeats + ride.passengers.filter(p => p.status === 'confirmed').length}</p>
                     </div>
-                    
+
                     <div>
                       <div className="flex items-center text-gray-500 mb-1">
                         <DollarSign className="h-5 w-5 mr-1" />
@@ -249,7 +251,7 @@ const handleCancelBooking = async (bookingId: string) => {
                       <p className="font-medium text-primary-600">${ride.price} per passenger</p>
                     </div>
                   </div>
-                  
+
                   {ride.carDetails && (
                     <div className="border-t border-gray-200 pt-6">
                       <div className="flex items-center text-gray-500 mb-3">
@@ -265,7 +267,7 @@ const handleCancelBooking = async (bookingId: string) => {
                       </div>
                     </div>
                   )}
-                  
+
                   {ride.description && (
                     <div className="border-t border-gray-200 pt-6">
                       <div className="flex items-center text-gray-500 mb-3">
@@ -278,35 +280,34 @@ const handleCancelBooking = async (bookingId: string) => {
                 </div>
               </div>
             </div>
-            
+
             {ride.status !== 'scheduled' && (
               <div className="mt-6 bg-white rounded-lg shadow-md overflow-hidden">
                 <div className="p-6">
                   <h2 className="text-lg font-bold text-gray-900 mb-3">Ride Status</h2>
-                  <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                    ride.status === 'in-progress' ? 'bg-yellow-100 text-yellow-800' :
-                    ride.status === 'completed' ? 'bg-green-100 text-green-800' :
-                    'bg-red-100 text-red-800'
-                  }`}>
+                  <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${ride.status === 'in-progress' ? 'bg-yellow-100 text-yellow-800' :
+                      ride.status === 'completed' ? 'bg-green-100 text-green-800' :
+                        'bg-red-100 text-red-800'
+                    }`}>
                     {ride.status === 'in-progress' ? 'In Progress' :
-                     ride.status === 'completed' ? 'Completed' : 'Cancelled'}
+                      ride.status === 'completed' ? 'Completed' : 'Cancelled'}
                   </div>
                 </div>
               </div>
             )}
           </div>
-          
+
           <div className="space-y-6">
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
               <div className="p-6">
                 <h2 className="text-lg font-bold text-gray-900 mb-4">Driver Information</h2>
-                
+
                 <div className="flex items-center">
                   <div className="h-16 w-16 rounded-full bg-primary-100 flex items-center justify-center overflow-hidden">
                     {ride.driver.profilePicture ? (
-                      <img 
-                        src={ride.driver.profilePicture} 
-                        alt={ride.driver.name} 
+                      <img
+                        src={ride.driver.profilePicture}
+                        alt={ride.driver.name}
                         className="h-full w-full object-cover"
                       />
                     ) : (
@@ -315,7 +316,7 @@ const handleCancelBooking = async (bookingId: string) => {
                       </span>
                     )}
                   </div>
-                  
+
                   <div className="ml-4">
                     <p className="font-medium text-lg">{ride.driver.name}</p>
                     <div className="flex items-center mt-1">
@@ -326,7 +327,7 @@ const handleCancelBooking = async (bookingId: string) => {
                     </div>
                   </div>
                 </div>
-                
+
                 {isUserPassenger && ride.passengers.some(p => p.user._id === user?._id && p.status === 'confirmed') && (
                   <div className="mt-4 space-y-3">
                     {ride.driver.phone && (
@@ -345,15 +346,15 @@ const handleCancelBooking = async (bookingId: string) => {
             </div>
             {/* i am adding here deepseek.com suggestion  */}
             {isUserDriver && ride.status === 'scheduled' && (
-  <div className="bg-white rounded-lg shadow-md overflow-hidden mt-6">
-    <div className="p-6">
-      <h2 className="text-lg font-bold text-gray-900 mb-4">Booking Requests</h2>
-      
-      {ride.passengers.filter(p => p.status === 'pending').length === 0 ? (
-        <p className="text-gray-500">No pending booking requests</p>
-      ) : (
-        <div className="space-y-4">
-          {ride.passengers
+              <div className="bg-white rounded-lg shadow-md overflow-hidden mt-6">
+                <div className="p-6">
+                  <h2 className="text-lg font-bold text-gray-900 mb-4">Booking Requests</h2>
+
+                  {ride.passengers.filter(p => p.status === 'pending').length === 0 ? (
+                    <p className="text-gray-500">No pending booking requests</p>
+                  ) : (
+                    <div className="space-y-4">
+                      {/* {ride.passengers
             .filter(p => p.status === 'pending')
             .map(passenger => {
               const booking: Booking = {
@@ -364,11 +365,28 @@ const handleCancelBooking = async (bookingId: string) => {
                 pickupPoint: passenger.pickupPoint,
                 dropoffPoint: passenger.dropoffPoint,
                 createdAt: new Date().toISOString() // or actual creation date
+              }; */}
+
+
+
+                      
+              {ride.passengers
+            .filter(p => p.status === 'pending')
+            .map(passenger => {
+              const booking: Booking = {
+                _id: `${ride._id}`, // or a proper booking ID if available
+                ride: ride,
+                passenger: passenger.user,
+                status: passenger.status,
+                pickupPoint: passenger.pickupPoint,
+                dropoffPoint: passenger.dropoffPoint,
+                createdAt: new Date().toISOString() // or actual creation date
               };
-              
               return (
+                
                 <BookingRequestCard
-                  key={passenger.user._id}
+                  // key={passenger.user._id}
+                  key={booking._id}
                   booking={booking}
                   onAccept={handleAcceptBooking}
                   onCancel={handleCancelBooking}
@@ -376,17 +394,36 @@ const handleCancelBooking = async (bookingId: string) => {
                 />
               );
             })}
-        </div>
-      )}
-    </div>
-  </div>
-)}
+
+
+
+
+{/* {bookings
+                        .filter(booking => booking.status === 'pending')
+                        .map(booking => (
+                          <BookingRequestCard
+                            key={booking._id}                     // Unique key per booking
+                            booking={booking}                     // Pass booking data
+                            onAccept={handleAcceptBooking}       // Accept handler
+                            onCancel={handleCancelBooking}       // Cancel handler
+                            loading={updatingStatus[booking._id] || false}  // Loading state
+                          />
+                        ))
+                      } */}
+
+
+
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
               <div className="p-6">
                 <h2 className="text-lg font-bold text-gray-900 mb-4">
                   {isUserPassenger ? 'Your Booking Status' : 'Book This Ride'}
                 </h2>
-                
+
                 {isUserDriver ? (
                   <div className="bg-yellow-50 p-4 rounded-md">
                     <p className="text-yellow-800">This is your ride posting.</p>
@@ -396,19 +433,18 @@ const handleCancelBooking = async (bookingId: string) => {
                     {ride.passengers.map(passenger => {
                       if (passenger.user._id === user?._id) {
                         return (
-                          <div 
-                            key={passenger.user._id} 
-                            className={`p-4 rounded-md ${
-                              passenger.status === 'confirmed' ? 'bg-green-50' :
-                              passenger.status === 'cancelled' ? 'bg-red-50' : 'bg-yellow-50'
-                            }`}
+                          <div
+                            key={passenger.user._id}
+                            className={`p-4 rounded-md ${passenger.status === 'confirmed' ? 'bg-green-50' :
+                                passenger.status === 'cancelled' ? 'bg-red-50' : 'bg-yellow-50'
+                              }`}
                           >
                             <p className={
                               passenger.status === 'confirmed' ? 'text-green-800' :
-                              passenger.status === 'cancelled' ? 'text-red-800' : 'text-yellow-800'
+                                passenger.status === 'cancelled' ? 'text-red-800' : 'text-yellow-800'
                             }>
                               {passenger.status === 'confirmed' ? 'Your booking is confirmed!' :
-                              passenger.status === 'cancelled' ? 'Your booking was cancelled.' : 'Your booking is pending confirmation.'}
+                                passenger.status === 'cancelled' ? 'Your booking was cancelled.' : 'Your booking is pending confirmation.'}
                             </p>
                             {passenger.status === 'pending' && (
                               <p className="text-sm text-gray-600 mt-2">
@@ -436,7 +472,7 @@ const handleCancelBooking = async (bookingId: string) => {
                         <p className="text-gray-700 mb-4">
                           Book your spot now for ${ride.price}. Once the driver accepts your booking, you'll pay in cash directly to the driver.
                         </p>
-                        
+
                         {bookingError && (
                           <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-4">
                             <div className="flex">
@@ -449,13 +485,12 @@ const handleCancelBooking = async (bookingId: string) => {
                             </div>
                           </div>
                         )}
-                        
+
                         <button
                           onClick={handleBookRide}
                           disabled={bookingStatus === 'loading' || !canBookRide}
-                          className={`w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white ${
-                            canBookRide ? 'bg-primary-600 hover:bg-primary-700' : 'bg-gray-400 cursor-not-allowed'
-                          } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500`}
+                          className={`w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white ${canBookRide ? 'bg-primary-600 hover:bg-primary-700' : 'bg-gray-400 cursor-not-allowed'
+                            } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500`}
                         >
                           {bookingStatus === 'loading' ? (
                             <>

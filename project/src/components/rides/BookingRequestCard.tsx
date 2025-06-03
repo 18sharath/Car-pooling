@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { Booking } from '../../types';
 
 interface BookingRequestCardProps {
+  
   booking: Booking;
   onAccept: (bookingId: string) => void;
   onCancel: (bookingId: string) => void;

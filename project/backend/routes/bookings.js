@@ -124,6 +124,7 @@ router.put('/:id/status', auth, async (req, res) => {
     
     res.json({ booking, ride });
   } catch (err) {
+    console.log("req came in backend")
     console.error(err.message);
     res.status(500).send('Server error');
   }
